@@ -1,4 +1,5 @@
 ﻿using Ass1_C_5_OrderFastFood.Data;
+using Ass1_C_5_OrderFastFood.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +36,34 @@ namespace Ass1_C_5_OrderFastFood.Controllers
             var item = _db.FoodItems.Include(f => f.Category).FirstOrDefault(f => f.Id == id);
             if (item == null) return NotFound();
             return View(item);
+        }
+        public async Task<IActionResult> Search(FoodSearchViewModel search)
+        {
+            var query = _db.FoodItems
+                           .Include(f => f.Category)
+                           .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search.Name))
+                query = query.Where(f => f.Name.Contains(search.Name));
+
+            if (search.PriceMin.HasValue)
+                query = query.Where(f => f.Price >= search.PriceMin.Value);
+
+            if (search.PriceMax.HasValue)
+                query = query.Where(f => f.Price <= search.PriceMax.Value);
+
+            // 🔥 Sửa lỗi: tìm theo CategoryName, không dùng f.Category.Contains
+            if (!string.IsNullOrEmpty(search.Category))
+                query = query.Where(f => f.Category != null &&
+                                         f.Category.Name.Contains(search.Category));
+
+            // 🔍 Tìm theo mô tả
+            if (!string.IsNullOrEmpty(search.Description))
+                query = query.Where(f => f.Description.Contains(search.Description));
+
+            search.Results = await query.ToListAsync();
+
+            return View(search);
         }
     }
 }

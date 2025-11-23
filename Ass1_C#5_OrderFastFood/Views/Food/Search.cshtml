@@ -1,0 +1,95 @@
+﻿@model Ass1_C_5_OrderFastFood.Models.FoodSearchViewModel
+
+<h2>Tìm kiếm nâng cao</h2>
+
+<form method="get" class="p-3 border rounded bg-light mb-4">
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <label class="form-label">Tên món</label>
+            <input name="Name" class="form-control form-control-sm"
+                   value="@Model?.Name" placeholder="Nhập tên món..." />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Giá từ</label>
+            <input name="PriceMin" type="number" class="form-control form-control-sm"
+                   value="@Model?.PriceMin" placeholder="0" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Đến giá</label>
+            <input name="PriceMax" type="number" class="form-control form-control-sm"
+                   value="@Model?.PriceMax" placeholder="0" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Chủng loại</label>
+            <input name="Category" class="form-control form-control-sm"
+                   value="@Model?.Category" placeholder="VD: Đồ uống, món nước..." />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Thông tin mô tả</label>
+            <input name="Description" class="form-control form-control-sm"
+                   value="@Model?.Description" placeholder="Nhập mô tả..." />
+        </div>
+
+        <div class="col-12 text-end mt-2">
+            <button class="btn btn-primary btn-sm px-4 me-2">
+                Tìm kiếm
+            </button>
+
+            <a href="/Food/Index" class="btn btn-secondary btn-sm px-4">
+                Quay lại
+            </a>
+        </div>
+
+    </div>
+</form>
+
+
+<hr />
+
+@if (Model?.Results != null)
+{
+    <h3 class="mt-4 mb-3">Kết quả tìm kiếm:</h3>
+
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
+        @foreach (var item in Model.Results)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="@item.ImageUrl"
+                         class="card-img-top"
+                         alt="@item.Name"
+                         style="height:130px; object-fit:cover; border-bottom:1px solid #eee;" />
+
+                    <div class="card-body p-2 d-flex flex-column">
+                        <h6 class="card-title text-truncate mb-1 fw-bold">@item.Name</h6>
+
+                        <p class="text-muted small mb-1">
+                            <span class="badge bg-secondary">@item.Category?.Name</span>
+                        </p>
+
+                        <p class="text-danger fw-bold mb-2" style="font-size:14px;">
+                            @string.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", item.Price)
+                        </p>
+
+                        <div class="mt-auto d-flex justify-content-between">
+                            <a href="/Food/Details/@item.Id"
+                               class="btn btn-outline-info btn-sm px-2 py-1">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+
+                            <a href="/Cart/AddToCart/@item.Id"
+                               class="btn btn-success btn-sm px-2 py-1">
+                                <i class="fas fa-cart-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
