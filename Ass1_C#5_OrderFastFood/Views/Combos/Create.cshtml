@@ -1,0 +1,171 @@
+﻿@using System.Text.Json
+@model Ass1_C_5_OrderFastFood.Models.ComboCreateViewModel
+
+@{
+    ViewData["Title"] = "Tạo Combo mới";
+    // Ép kiểu ViewBag sang List<SelectListItem> thay vì SelectList để đảm bảo JSON.Serialize hoạt động tốt
+    var foodItemsList = ViewBag.FoodItemsList as List<SelectListItem>;
+}
+
+<h2 class="mb-4 text-primary"><i class="fas fa-cubes"></i> @ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow p-4">
+
+            @* ... (Phần hiển thị TempData giữ nguyên) ... *@
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @* START: HỘP KIỂM TRA DỮ LIỆU ĐÃ CÓ SẴN (YÊU CẦU CỦA BẠN) *@
+            <div class="card bg-light mb-4 p-3 border-secondary">
+                <h5 class="text-secondary"><i class="fas fa-info-circle"></i> Món Ăn Đã Có Sẵn (Để kiểm tra)</h5>
+                @if (foodItemsList != null && foodItemsList.Any())
+                {
+                    <ul class="list-unstyled small">
+                        @foreach (var item in foodItemsList)
+                        {
+                            <li>- @item.Text (ID: @item.Value)</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-danger small">⚠️ Không tìm thấy món ăn nào trong database. Vui lòng thêm món ăn trước!</p>
+                }
+            </div>
+            @* END: HỘP KIỂM TRA DỮ LIỆU *@
+
+            <form asp-action="Create" id="comboForm" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                @* ... (Phần nhập Name, Price, Description giữ nguyên) ... *@
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Tên Combo</label>
+                    <input asp-for="Name" class="form-control" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label fw-bold">Giá Combo</label>
+                    <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" required />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ImageFile" class="form-label fw-bold">Ảnh Combo</label>
+                    <input asp-for="ImageFile" type="file" class="form-control" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+
+                <hr />
+
+                <h4 class="text-primary"><i class="fas fa-list-alt"></i> Thành phần Combo</h4>
+                <div id="comboItemsContainer">
+                    <p class="text-muted" id="noItemsMessage">Chưa có món ăn nào trong combo. Hãy thêm vào!</p>
+                </div>
+
+                <button type="button" id="addItemButton" class="btn btn-outline-primary btn-sm mt-3">
+                    <i class="fas fa-plus"></i> Thêm Món ăn
+                </button>
+
+                <hr />
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Tạo Combo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            const container = $('#comboItemsContainer');
+
+            // Chuyển dữ liệu từ C# sang JS an toàn
+            const foodItemsJson = @Html.Raw(JsonSerializer.Serialize(foodItemsList ?? new List<SelectListItem>()));
+
+            const optionsHtml = foodItemsJson.map(item => `<option value="${item.Value}">${item.Text}</option>`).join('');
+
+                   function createComboItemRow() {
+            if (optionsHtml.length === 0) {
+                alert('Không có món ăn nào để chọn. Vui lòng thêm món ăn vào hệ thống trước!');
+                return;
+            }
+
+            const index = container.children('.combo-item-row').length; // index cho mỗi dòng
+
+            const itemHtml = `
+                <div class="row mb-3 combo-item-row">
+                    <div class="col-6">
+                        <select name="selectedFoodItemIds[${index}]" class="form-select food-item-select" required>
+                            <option value="">-- Chọn Món ăn --</option>
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <input type="number" name="quantities[${index}]" value="1" min="1" class="form-control" placeholder="Số lượng" required />
+                    </div>
+                    <div class="col-2 text-end">
+                        <button type="button" class="btn btn-danger btn-sm remove-item-btn" title="Xóa món này">
+                            <i class="fas fa-times"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.append(itemHtml);
+            $('#noItemsMessage').hide();
+            $.validator.unobtrusive.parse(container.find('.combo-item-row:last'));
+        }
+
+            $('#addItemButton').off('click').on('click', function (e) {
+                e.preventDefault();
+                createComboItemRow();
+            });
+
+            $(document).on('click', '.remove-item-btn', function () {
+                $(this).closest('.combo-item-row').remove();
+                if (container.children('.combo-item-row').length === 0) {
+                    $('#noItemsMessage').show();
+                }
+            });
+
+            $('#comboForm').submit(function (e) {
+                if (container.children('.combo-item-row').length === 0) {
+                    alert('Combo phải có ít nhất một món ăn!');
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

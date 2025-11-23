@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Ass1_C_5_OrderFastFood.Models.ApplicationUser>
+
+<h2>Quản lý Users</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>UserName</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.UserName</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-info btn-sm">Chi tiết</a>
+                    <form asp-action="Delete" asp-route-id="@user.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

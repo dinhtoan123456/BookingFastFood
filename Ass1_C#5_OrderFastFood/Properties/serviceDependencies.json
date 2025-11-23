@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:Ass1_C_5_OrderFastFoodContextConnection"
+    }
+  }
+}

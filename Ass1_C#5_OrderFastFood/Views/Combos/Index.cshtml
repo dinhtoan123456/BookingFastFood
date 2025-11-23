@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Ass1_C_5_OrderFastFood.Models.Combo>
+
+@{
+    ViewData["Title"] = "Quản lý Combo";
+}
+
+<h2 class="mb-4 text-primary"><i class="fas fa-box-open"></i> @ViewData["Title"]</h2>
+
+<div class="d-flex justify-content-end mb-4">
+    <a asp-action="Create" asp-controller="Combos" class="btn btn-success d-flex align-items-center">
+        <i class="fas fa-plus me-1"></i> Tạo Combo mới
+    </a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 10%;">Ảnh</th>
+                    <th style="width: 20%;">Tên Combo</th>
+                    <th style="width: 15%;">Giá Combo</th>
+                    <th style="width: 25%;">Mô tả</th>
+                    <th style="width: 25%;">Thành phần</th>
+                    <th style="width: 5%;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var combo in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(combo.ImageUrl))
+                            {
+                                <img src="@combo.ImageUrl" alt="@combo.Name" style="width:100px; height:auto;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có ảnh</span>
+                            }
+                        </td>
+                        <td><strong>@combo.Name</strong></td>
+                        <td class="text-danger fw-bold">@string.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:C0}", combo.Price)</td>
+                        <td>@combo.Description</td>
+                        <td>
+                            @if (combo.ComboItems != null && combo.ComboItems.Any())
+                            {
+                                <ul class="list-unstyled mb-0 small">
+                                    @foreach (var item in combo.ComboItems)
+                                    {
+                                        <li>@item.FoodItem?.Name x <strong>@item.Quantity</strong></li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có món nào</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-action="Delete" asp-controller="Combos" asp-route-id="@combo.Id" method="post"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa Combo @combo.Name này?');">
+                                <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Xóa Combo">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

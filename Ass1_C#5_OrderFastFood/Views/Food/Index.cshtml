@@ -1,0 +1,65 @@
+﻿@model List<Ass1_C_5_OrderFastFood.Models.FoodItem>
+
+@{
+    ViewData["Title"] = "Thực đơn";
+}
+
+<h2 class="mb-4 text-center text-secondary"><i class="fas fa-utensils"></i> Khám phá Menu</h2>
+
+<form method="get" asp-action="Index" class="mb-5 p-3 border rounded shadow-sm bg-light">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label for="q" class="form-label small fw-bold">Tìm kiếm theo tên:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" id="q" name="q" class="form-control" placeholder="Tìm món ăn..." value="@Context.Request.Query["q"]" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label for="minPrice" class="form-label small fw-bold">Giá tối thiểu:</label>
+            <input type="number" id="minPrice" name="minPrice" class="form-control" placeholder="Min Price" value="@Context.Request.Query["minPrice"]" />
+        </div>
+        <div class="col-md-3">
+            <label for="maxPrice" class="form-label small fw-bold">Giá tối đa:</label>
+            <input type="number" id="maxPrice" name="maxPrice" class="form-control" placeholder="Max Price" value="@Context.Request.Query["maxPrice"]" />
+        </div>
+        <div class="col-md-2 d-flex">
+            <button type="submit" class="btn btn-primary w-100 me-2"><i class="fas fa-filter"></i> Lọc</button>
+            <a asp-action="Index" class="btn btn-outline-secondary" title="Reset"><i class="fas fa-redo"></i></a>
+        </div>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center" role="alert">
+        Không tìm thấy món ăn nào phù hợp với tiêu chí tìm kiếm của bạn.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">@item.Name</h5>
+                        <p class="card-text text-muted small mb-1">Danh mục: <span class="badge bg-secondary">@item.Category?.Name</span></p>
+                        <h4 class="text-danger fw-bold mt-2 mb-3">@item.Price.ToString("C0")</h4>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-info-circle"></i> Chi tiết
+                            </a>
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.Id" class="btn btn-success d-flex align-items-center">
+                                <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

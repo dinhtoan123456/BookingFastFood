@@ -1,0 +1,23 @@
+﻿@model Ass1_C_5_OrderFastFood.Models.ApplicationUser
+
+<h2>Chi tiết User</h2>
+<p><strong>Email:</strong> @Model.Email</p>
+<p><strong>UserName:</strong> @Model.UserName</p>
+
+<h3>Roles hiện tại:</h3>
+<ul>
+    @foreach (var role in ViewBag.Roles)
+    {
+        <li>@role</li>
+    }
+</ul>
+
+<h3>Cập nhật role</h3>
+<form asp-action="UpdateRole" method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <select name="role" class="form-control">
+        <option value="Admin">Admin</option>
+        <option value="Customer">Customer</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+</form>

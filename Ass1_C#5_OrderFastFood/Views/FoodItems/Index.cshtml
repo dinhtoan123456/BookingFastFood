@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Ass1_C_5_OrderFastFood.Models.FoodItem>
+
+@{
+    ViewData["Title"] = "Quản lý Món ăn";
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h2 class="mb-4 text-primary"><i class="fas fa-utensils"></i> @ViewData["Title"]</h2>
+
+<h2 class="mb-4 text-primary"><i class="fas fa-hamburger"></i> Danh sách Món ăn</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-4 p-3 border rounded shadow-sm bg-light">
+    <form method="get" class="d-flex me-3">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" name="search" class="form-control" placeholder="Tìm món..." value="@Context.Request.Query["search"]" />
+        </div>
+        <button type="submit" class="btn btn-outline-primary ms-2">Tìm</button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2" title="Reset"><i class="fas fa-redo"></i></a>
+    </form>
+    
+    <a asp-action="Create" class="btn btn-success d-flex align-items-center">
+        <i class="fas fa-plus me-1"></i> Thêm món mới
+    </a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 10%;">Ảnh</th>
+                    <th style="width: 40%;">Tên</th>
+                    <th style="width: 20%;">Giá</th>
+                    <th style="width: 30%;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.ImageUrl" class="img-thumbnail" alt="@item.Name" width="80" height="80" style="object-fit: cover;"/>
+                        </td>
+                        <td><strong>@item.Name</strong></td>
+                        <td class="text-danger fw-bold">@string.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:C0}", item.Price)</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm me-2" data-bs-toggle="tooltip" title="Sửa">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa món @item.Name này?');">
+                                <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Xóa">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

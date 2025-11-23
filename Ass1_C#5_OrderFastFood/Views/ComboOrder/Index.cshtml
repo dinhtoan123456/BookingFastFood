@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Ass1_C_5_OrderFastFood.Models.Combo>
+
+@{
+    ViewData["Title"] = "Danh sách Combo";
+    var currentFilter = ViewData["CurrentFilter"] as string ?? "";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Thanh tìm kiếm -->
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Tìm combo..." value="@currentFilter" />
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Tìm
+        </button>
+    </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var combo in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="@(string.IsNullOrEmpty(combo.ImageUrl) ? "/images/default-combo.jpg" : combo.ImageUrl)"
+                     class="card-img-top" style="height:200px; object-fit:cover;" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@combo.Name</h5>
+                    <p class="card-text text-muted small">
+                        Thành phần:
+                        @foreach (var item in combo.ComboItems)
+                        {
+                            <span class="badge bg-secondary">@item.FoodItem.Name</span>
+                        }
+                    </p>
+                    <h4 class="text-danger fw-bold mt-2">@combo.Price.ToString("C0")</h4>
+
+                    <div class="mt-auto d-flex justify-content-between">
+                        <a asp-controller="ComboOrder" asp-action="Details" asp-route-id="@combo.Id" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-info-circle"></i> Chi tiết
+                        </a>
+                        <form asp-controller="Cart" asp-action="AddCombo" method="post">
+                            <input type="hidden" name="id" value="@combo.Id" />
+                            <button type="submit" class="btn btn-success d-flex align-items-center">
+                                <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
