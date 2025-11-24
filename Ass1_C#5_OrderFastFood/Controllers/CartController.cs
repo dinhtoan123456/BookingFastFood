@@ -20,8 +20,52 @@ namespace Ass1_C_5_OrderFastFood.Controllers
         }
         public IActionResult Index()
         {
-            var cartItems = GetCart();
-            return View(cartItems);
+            var cart = GetCart(); // lấy giỏ từ session
+            var user = _userManager.GetUserAsync(User).Result;
+
+            // Địa chỉ mặc định lúc đăng ký
+            ViewBag.DefaultAddress = user?.Address ?? "";
+
+            // Lấy danh sách địa chỉ đã lưu từ bảng UserAddress
+            var userId = _userManager.GetUserId(User);
+            ViewBag.SavedAddresses = _db.UserAddresses
+                                        .Where(a => a.ApplicationUserId == userId)
+                                        .OrderByDescending(a => a.CreatedAt)
+                                        .Select(a => a.Address)
+                                        .ToList();
+
+            return View(cart);
+        }
+        // POST: thêm địa chỉ mới
+        [HttpPost]
+        public async Task<IActionResult> AddAddress(string newAddress)
+        {
+            if (!User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(newAddress))
+                return RedirectToAction("Index");
+
+            var userId = _userManager.GetUserId(User);
+            var address = new UserAddress
+            {
+                ApplicationUserId = userId,
+                Address = newAddress
+            };
+            _db.UserAddresses.Add(address);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        // POST: xóa địa chỉ đã lưu
+        [HttpPost]
+        public async Task<IActionResult> RemoveAddress(int addressId)
+        {
+            var address = await _db.UserAddresses.FindAsync(addressId);
+            if (address != null)
+            {
+                _db.UserAddresses.Remove(address);
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
         }
 
         // lấy cart từ Session

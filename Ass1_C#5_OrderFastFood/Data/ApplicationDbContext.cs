@@ -17,5 +17,6 @@ namespace Ass1_C_5_OrderFastFood.Data
         public DbSet<ComboItem> ComboItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<UserAddress> UserAddresses { get; set; }
     }
 }

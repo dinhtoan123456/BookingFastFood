@@ -1,0 +1,58 @@
+﻿@model List<Ass1_C_5_OrderFastFood.Models.Order>
+
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+}
+
+<h2 class="text-primary mb-4">Lịch sử đơn hàng</h2>
+
+<div class="mb-3">
+    <form method="get" asp-action="History" class="d-flex gap-2">
+        <select name="range" class="form-select" style="width:200px;">
+            <option value="">Tất cả</option>
+            <option value="today">Hôm nay</option>
+            <option value="week">7 ngày qua</option>
+            <option value="month">30 ngày qua</option>
+            <option value="year">1 năm qua</option>
+        </select>
+
+        <button class="btn btn-primary">Lọc</button>
+    </form>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Không có đơn hàng nào.</div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Ngày đặt</th>
+                <th>Trạng thái</th>
+                <th>Tổng tiền</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <span class="badge bg-info">@order.Status</span>
+                    </td>
+                    <td class="text-danger fw-bold">@order.Total.ToString("C0")</td>
+                    <td>
+                        <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
+                            Xem chi tiết
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

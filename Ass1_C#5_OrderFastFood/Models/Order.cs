@@ -11,6 +11,7 @@
         public decimal Total { get; set; }
         public string PaymentMethod { get; set; } // e.g., "COD", "StripeTest"
         public string DeliveryAddress { get; set; }
+        public DateTime? PaidAt { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
     }
 }
