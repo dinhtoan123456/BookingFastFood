@@ -4,55 +4,64 @@
     ViewData["Title"] = "Lịch sử đơn hàng";
 }
 
-<h2 class="text-primary mb-4">Lịch sử đơn hàng</h2>
+<h2 class="text-primary fw-bold mb-4">
+    <i class="fas fa-history me-2"></i> Lịch sử đơn hàng
+</h2>
 
-<div class="mb-3">
-    <form method="get" asp-action="History" class="d-flex gap-2">
-        <select name="range" class="form-select" style="width:200px;">
-            <option value="">Tất cả</option>
-            <option value="today">Hôm nay</option>
-            <option value="week">7 ngày qua</option>
-            <option value="month">30 ngày qua</option>
-            <option value="year">1 năm qua</option>
-        </select>
-
-        <button class="btn btn-primary">Lọc</button>
-    </form>
+<div class="card shadow-sm mb-4">
+    <div class="card-body d-flex flex-wrap gap-2">
+        <form method="get" asp-action="History" class="d-flex gap-2 align-items-center">
+            <select name="range" class="form-select" style="min-width:200px;">
+                <option value="">Tất cả đơn hàng</option>
+                <option value="today">Hôm nay</option>
+                <option value="week">7 ngày qua</option>
+                <option value="month">30 ngày qua</option>
+                <option value="year">1 năm qua</option>
+            </select>
+            <button class="btn btn-primary">
+                <i class="fas fa-filter me-1"></i> Lọc
+            </button>
+        </form>
+    </div>
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">Không có đơn hàng nào.</div>
+    <div class="alert alert-info text-center py-4 shadow-sm">
+        <i class="fas fa-info-circle me-2"></i> Không có đơn hàng nào.
+    </div>
 }
 else
 {
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Mã đơn</th>
-                <th>Ngày đặt</th>
-                <th>Trạng thái</th>
-                <th>Tổng tiền</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var order in Model)
-            {
-                <tr>
-                    <td>@order.Id</td>
-                    <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>
-                        <span class="badge bg-info">@order.Status</span>
-                    </td>
-                    <td class="text-danger fw-bold">@order.Total.ToString("C0")</td>
-                    <td>
-                        <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
-                            Xem chi tiết
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var order in Model)
+        {
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">
+                            Đơn hàng #@order.Id
+                        </h5>
+                        <p class="text-muted mb-1">
+                            <i class="far fa-clock me-1"></i>
+                            @order.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </p>
+
+                        <span class="badge bg-info mb-3">
+                            @order.Status
+                        </span>
+
+                        <h5 class="text-danger fw-bold">
+                            @order.Total.ToString("C0")
+                        </h5>
+
+                        <a asp-action="OrderDetail" asp-route-id="@order.Id"
+                           class="btn btn-outline-primary mt-3 w-100">
+                            <i class="fas fa-eye me-2"></i>Xem chi tiết
                         </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }

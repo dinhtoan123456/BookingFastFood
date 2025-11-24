@@ -209,6 +209,56 @@ namespace Ass1_C_5_OrderFastFood.Controllers
 
             return RedirectToAction("Index");
         }
+        public async Task<IActionResult> History(string? range)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var query = _db.Orders
+                .Where(o => o.ApplicationUserId == user.Id)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.FoodItem)
+                .AsQueryable();
+
+            DateTime now = DateTime.Now;
+
+            switch (range)
+            {
+                case "today":
+                    query = query.Where(o => o.CreatedAt.Date == now.Date);
+                    break;
+
+                case "week":
+                    query = query.Where(o => o.CreatedAt >= now.AddDays(-7));
+                    break;
+
+                case "month":
+                    query = query.Where(o => o.CreatedAt >= now.AddMonths(-1));
+                    break;
+
+                case "year":
+                    query = query.Where(o => o.CreatedAt >= now.AddYears(-1));
+                    break;
+            }
+
+            var orders = await query
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            return View(orders);
+        }
+        public async Task<IActionResult> OrderDetail(int id)
+        {
+            var order = await _db.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.FoodItem)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound();
+
+            return View(order);
+        }
+
 
     }
 }
