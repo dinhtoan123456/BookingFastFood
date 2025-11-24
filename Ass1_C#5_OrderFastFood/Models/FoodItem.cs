@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Ass1_C_5_OrderFastFood.Models
 {
@@ -26,6 +27,8 @@ namespace Ass1_C_5_OrderFastFood.Models
         [Required(ErrorMessage = "Vui lòng chọn danh mục.")]
         [DisplayName("Danh mục")]
         public int CategoryId { get; set; }
+
+        [JsonIgnore]
         public FoodCategory? Category { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập số lượng món ăn.")]

@@ -1,6 +1,7 @@
 ﻿using Ass1_C_5_OrderFastFood.Data;
 using Ass1_C_5_OrderFastFood.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ass1_C_5_OrderFastFood.Controllers
@@ -39,6 +40,15 @@ namespace Ass1_C_5_OrderFastFood.Controllers
         }
         public async Task<IActionResult> Search(FoodSearchViewModel search)
         {
+            // Load Categories cho dropdown
+            search.Categories = await _db.FoodCategories
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                .ToListAsync();
+
             var query = _db.FoodItems
                            .Include(f => f.Category)
                            .AsQueryable();
@@ -52,15 +62,15 @@ namespace Ass1_C_5_OrderFastFood.Controllers
             if (search.PriceMax.HasValue)
                 query = query.Where(f => f.Price <= search.PriceMax.Value);
 
-            // 🔥 Sửa lỗi: tìm theo CategoryName, không dùng f.Category.Contains
-            if (!string.IsNullOrEmpty(search.Category))
-                query = query.Where(f => f.Category != null &&
-                                         f.Category.Name.Contains(search.Category));
+            // 🔥 Tìm theo CategoryId từ dropdown
+            if (search.CategoryId.HasValue)
+                query = query.Where(f => f.CategoryId == search.CategoryId.Value);
 
             // 🔍 Tìm theo mô tả
             if (!string.IsNullOrEmpty(search.Description))
                 query = query.Where(f => f.Description.Contains(search.Description));
 
+            // Lấy kết quả
             search.Results = await query.ToListAsync();
 
             return View(search);

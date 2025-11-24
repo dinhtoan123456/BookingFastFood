@@ -25,8 +25,11 @@
 
         <div class="col-md-6">
             <label class="form-label">Chủng loại</label>
-            <input name="Category" class="form-control form-control-sm"
-                   value="@Model?.Category" placeholder="VD: Đồ uống, món nước..." />
+            <select name="CategoryId"
+                    class="form-control form-control-sm"
+                    asp-items="Model.Categories">
+                <option value="">-- Chọn chủng loại --</option>
+            </select>
         </div>
 
         <div class="col-md-6">

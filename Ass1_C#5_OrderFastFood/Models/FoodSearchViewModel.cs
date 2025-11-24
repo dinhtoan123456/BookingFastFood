@@ -1,11 +1,13 @@
-﻿namespace Ass1_C_5_OrderFastFood.Models
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Ass1_C_5_OrderFastFood.Models
 {
     public class FoodSearchViewModel
     {
         public string? Name { get; set; }
         public decimal? PriceMin { get; set; }
         public decimal? PriceMax { get; set; }
-        public string? Category { get; set; }
+        public List<SelectListItem>? Categories { get; set; }
         public int? CategoryId { get; set; }
         public string? Description { get; set; }
 
